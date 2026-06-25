@@ -1,4 +1,4 @@
-package dev.vorstu.initializer;
+package dev.vorstu.infrastructure.initializer;
 
 import dev.vorstu.domain.student.Student;
 import dev.vorstu.repositoruies.StudentRepository;

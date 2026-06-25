@@ -1,7 +1,7 @@
 package dev.vorstu.domain.student.exception;
 
-public class UserNotFoundException extends RuntimeException {
-  public UserNotFoundException(String message) {
-    super(message);
-  }
+public class StudentNotFoundException extends RuntimeException {
+    public StudentNotFoundException(String message) {
+        super(message);
+    }
 }

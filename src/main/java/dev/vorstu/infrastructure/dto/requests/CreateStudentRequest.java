@@ -1,4 +1,16 @@
-package dev.vorstu.infrastructure;
+package dev.vorstu.infrastructure.dto.requests;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
+@Data
 public class CreateStudentRequest {
+    @NotBlank
+    @Size(max = 64)
+    String fio;
+    @Size(max = 64)
+    String group;
+    @Size(max = 24)
+    String phoneNumber;
 }
