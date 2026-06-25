@@ -1,6 +1,6 @@
-package dev.vorstu.controllers;
+package dev.vorstu.infrastructure.controller;
 
-import dev.vorstu.dto.Student;
+import dev.vorstu.domain.student.Student;
 import dev.vorstu.repositoruies.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,7 +12,7 @@ import java.util.Date;
 
 @RestController
 @RequestMapping("api/base")
-public class BaseController {
+public class StudentController {
 
     @Autowired
     private StudentRepository studentRepository;//Сервисы покинули чат на время выполнения методички

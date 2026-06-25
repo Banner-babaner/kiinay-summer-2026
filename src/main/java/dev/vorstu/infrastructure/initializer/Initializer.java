@@ -1,6 +1,6 @@
 package dev.vorstu.initializer;
 
-import dev.vorstu.dto.Student;
+import dev.vorstu.domain.student.Student;
 import dev.vorstu.repositoruies.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
