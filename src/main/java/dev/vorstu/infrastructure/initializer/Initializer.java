@@ -12,9 +12,7 @@ public class Initializer implements CommandLineRunner {
     StudentRepository studentRepository;
 
     private void initial(){
-        studentRepository.save(new Student("Vasia Pupkin", "VM", "+7"));
-        studentRepository.save(new Student("ShadowFrog", "VM", "+8"));
-        studentRepository.save(new Student("Barsik", "AM", "+99"));
+        System.out.println("Здесь могла бы быть иницилизация начальных данных, но не будет");
     }
 
     @Override

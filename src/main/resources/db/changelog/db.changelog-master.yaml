@@ -1,3 +1,7 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/sql/001_create_students.sql
+      file: db/changelog/migrations/001_create_students.sql
+  - include:
+      file: seeders/001_data_seed.sql
+      relativeToChangelogFile: true
+      context: dev
