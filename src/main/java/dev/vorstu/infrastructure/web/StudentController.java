@@ -1,10 +1,8 @@
 package dev.vorstu.infrastructure.web;
 
-import dev.vorstu.domain.student.Student;
-import dev.vorstu.domain.student.StudentService;
-import dev.vorstu.infrastructure.dto.requests.CreateStudentRequest;
-import dev.vorstu.infrastructure.dto.response.StudentInfo;
-import dev.vorstu.infrastructure.mapper.GlobalMapper;
+import dev.vorstu.application.student.dto.output.StudentInfo;
+import dev.vorstu.application.student.port.input.StudentService;
+import dev.vorstu.application.student.dto.input.CreateStudentRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,7 +17,6 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class StudentController {
     private final StudentService studentService;
-    private final GlobalMapper mapper;
 
 
     @GetMapping("check")
@@ -29,28 +26,27 @@ public class StudentController {
 
     @GetMapping(value="students", produces = MediaType.APPLICATION_JSON_VALUE)
     public Page<StudentInfo> getAllStudents(Pageable pageable){
-        return studentService.getAllStudents(pageable).map(mapper::toStudentInfo);
+        return studentService.getAllStudents(pageable);
     }
 
     @GetMapping(value = "students/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Student getStudentById(@PathVariable("id") Long id){
+    public StudentInfo getStudentById(@PathVariable("id") Long id){
         return studentService.getStudent(id);
     }
 
     @GetMapping(value = "students/filter", produces = MediaType.APPLICATION_JSON_VALUE)
     public Page<StudentInfo> getFilteredStudents(@RequestParam("group") String group,
                                              Pageable pageable){
-        return studentService.getStudentsInGroup(group, pageable).map(mapper::toStudentInfo);
+        return studentService.getStudentsInGroup(group, pageable);
     }
 
     @PostMapping(value = "students", produces = MediaType.APPLICATION_JSON_VALUE)
     public StudentInfo createStudent(@Valid @RequestBody StudentInfo newStudent){
-        return mapper.toStudentInfo(
-                studentService.createStudent(
+        return studentService.createStudent(
                 newStudent.getFio(),
                 newStudent.getGroup(),
                 newStudent.getPhoneNumber()
-        ));
+        );
     }
 
 
@@ -58,14 +54,12 @@ public class StudentController {
     public StudentInfo changeStudent(
             @PathVariable("id") Long studentId,
             @RequestBody CreateStudentRequest request){
-        return mapper.toStudentInfo(
-                studentService.editStudent(
+        return studentService.editStudent(
                         studentId,
                         request.getFio(),
                         request.getGroup(),
                         request.getPhoneNumber()
-                )
-        );
+                );
     }
 
     @DeleteMapping(value = "students/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

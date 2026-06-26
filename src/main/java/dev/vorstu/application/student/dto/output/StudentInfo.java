@@ -1,4 +1,4 @@
-package dev.vorstu.infrastructure.dto.response;
+package dev.vorstu.application.student.dto.output;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
