@@ -1,6 +1,6 @@
 package dev.vorstu.repository;
 
-import dev.vorstu.entity.auth.UserAuth;
+import dev.vorstu.entity.UserAuth;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

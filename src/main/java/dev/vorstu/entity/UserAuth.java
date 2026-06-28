@@ -1,4 +1,4 @@
-package dev.vorstu.entity.auth;
+package dev.vorstu.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;

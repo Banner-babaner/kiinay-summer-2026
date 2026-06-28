@@ -1,4 +1,4 @@
-package dev.vorstu.entity.auth;
+package dev.vorstu.entity;
 
 public enum UserRole {
     STUDENT,

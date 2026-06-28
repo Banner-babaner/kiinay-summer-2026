@@ -10,7 +10,7 @@ public class CreateStudentRequest {
     @Size(max = 64)
     String fio;
     @Size(max = 64)
-    String group;
+    Long groupId;
     @Size(max = 24)
     String phoneNumber;
 }

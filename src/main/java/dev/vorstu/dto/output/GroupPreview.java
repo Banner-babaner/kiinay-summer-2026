@@ -7,11 +7,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class StudentInfo {
+@NoArgsConstructor
+public class GroupPreview {
     private Long id;
-    private String fio;
-    private GroupPreview group;
-    private String phoneNumber;
+    private String name;
 }

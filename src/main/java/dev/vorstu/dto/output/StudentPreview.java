@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudentInfo {
+public class StudentPreview {
     private Long id;
     private String fio;
-    private GroupPreview group;
     private String phoneNumber;
 }
