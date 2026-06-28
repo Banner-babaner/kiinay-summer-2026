@@ -1,8 +1,8 @@
-package dev.vorstu.infrastructure.web;
+package dev.vorstu.controller;
 
-import dev.vorstu.application.student.dto.output.StudentInfo;
-import dev.vorstu.application.student.port.input.StudentService;
-import dev.vorstu.application.student.dto.input.CreateStudentRequest;
+import dev.vorstu.dto.input.CreateStudentRequest;
+import dev.vorstu.dto.output.StudentInfo;
+import dev.vorstu.service.StudentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

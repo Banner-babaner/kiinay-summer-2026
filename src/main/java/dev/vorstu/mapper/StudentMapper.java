@@ -1,8 +1,8 @@
-package dev.vorstu.application.student.mapper;
+package dev.vorstu.mapper;
 
 
-import dev.vorstu.application.student.dto.output.StudentInfo;
-import dev.vorstu.domain.student.Student;
+import dev.vorstu.dto.output.StudentInfo;
+import dev.vorstu.entity.student.Student;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 

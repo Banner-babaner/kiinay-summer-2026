@@ -2,6 +2,12 @@ databaseChangeLog:
   - include:
       file: db/changelog/migrations/001_create_students.sql
   - include:
+      file: db/changelog/migrations/002_create_auth.sql
+  - include:
       file: seeders/001_data_seed.sql
+      relativeToChangelogFile: true
+      context: dev
+  - include:
+      file: seeders/002_adding_admin.sql
       relativeToChangelogFile: true
       context: dev

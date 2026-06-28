@@ -1,4 +1,4 @@
-package dev.vorstu.application.student.dto.input;
+package dev.vorstu.dto.input;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

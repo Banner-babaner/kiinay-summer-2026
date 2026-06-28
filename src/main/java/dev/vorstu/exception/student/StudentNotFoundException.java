@@ -1,4 +1,4 @@
-package dev.vorstu.domain.student.exception;
+package dev.vorstu.exception.student;
 
 public class StudentNotFoundException extends RuntimeException {
     public StudentNotFoundException(String message) {

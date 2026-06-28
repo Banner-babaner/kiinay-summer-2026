@@ -1,4 +1,4 @@
-package dev.vorstu.domain.student.exception;
+package dev.vorstu.exception.student;
 
 public class InvalidPhoneNumberException extends RuntimeException {
     public InvalidPhoneNumberException(String message) {

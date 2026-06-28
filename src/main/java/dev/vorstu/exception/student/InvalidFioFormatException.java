@@ -1,4 +1,4 @@
-package dev.vorstu.domain.student.exception;
+package dev.vorstu.exception.student;
 
 public class InvalidFioFormatException extends RuntimeException {
     public InvalidFioFormatException(String message) {
