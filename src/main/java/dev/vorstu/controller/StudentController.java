@@ -3,6 +3,7 @@ package dev.vorstu.controller;
 import dev.vorstu.dto.input.CreateStudentRequest;
 import dev.vorstu.dto.output.StudentInfo;
 import dev.vorstu.service.StudentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,8 +14,9 @@ import java.util.Date;
 
 
 @RestController
-@RequestMapping("api/base")
+@RequestMapping("api/students")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "Bearer Authentication")
 public class StudentController {
     private final StudentService studentService;
 
