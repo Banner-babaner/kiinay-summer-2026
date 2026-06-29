@@ -2,24 +2,23 @@ databaseChangeLog:
   - include:
       file: db/changelog/migrations/001_create_students.sql
   - include:
-      file: db/changelog/migrations/002_create_auth.sql
-  - include:
-      file: db/changelog/migrations/003_add_groups.sql
-  - include:
-      file: db/changelog/migrations/004_adding_teachers.sql
-  - include:
-      file: db/changelog/migrations/005_teachers_can_call.sql
-  - include:
-      file: db/changelog/migrations/006_teachers_can_auth.sql
-  - include:
       file: seeders/001_data_seed.sql
       relativeToChangelogFile: true
       context: dev
   - include:
-      file: seeders/002_adding_admin.sql
+      file: db/changelog/migrations/002_create_auth.sql
+  - include:
+      file: db/changelog/migrations/003_add_groups.sql
+  - include:
+      file: db/changelog/migrations/004_add_teachers.sql
+  - include:
+      file: db/changelog/migrations/005_add_admins.sql
+
+  - include:
+      file: seeders/002_add_admin.sql
       relativeToChangelogFile: true
       context: dev
   - include:
-      file: seeders/003_seed_groups.sql
+      file: seeders/004_create_admin_for_shadowfrog.sql
       relativeToChangelogFile: true
       context: dev

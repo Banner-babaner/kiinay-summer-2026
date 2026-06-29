@@ -1,5 +1,6 @@
-package dev.vorstu.dto.output;
+package dev.vorstu.dto.input;
 
+import dev.vorstu.entity.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,8 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthResponse {
-    private Long accountId;
+public class SignUpRequest {
     private String login;
-    private String accessToken;
+    private String password;
+    private UserRole role;
 }

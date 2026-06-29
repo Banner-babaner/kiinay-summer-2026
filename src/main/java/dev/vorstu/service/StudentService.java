@@ -1,13 +1,14 @@
 package dev.vorstu.service;
 
+import dev.vorstu.dto.input.SignUpRequest;
+import dev.vorstu.dto.output.AuthResponse;
 import dev.vorstu.dto.output.StudentInfo;
 import dev.vorstu.entity.Student;
-import dev.vorstu.exception.student.InvalidFioFormatException;
-import dev.vorstu.exception.student.InvalidGroupNameException;
-import dev.vorstu.exception.student.InvalidPhoneNumberException;
-import dev.vorstu.exception.student.StudentNotFoundException;
+import dev.vorstu.entity.UserRole;
+import dev.vorstu.exception.student.*;
 import dev.vorstu.mapper.StudentMapper;
 import dev.vorstu.repository.StudentRepository;
+import dev.vorstu.repository.UserAuthRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,8 +21,29 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class StudentService {
     private final StudentRepository studentRepository;
+    private final AuthService authService;
+    private final UserAuthRepository userAuthRepository;
     private final StuddingGroupService studdingGroupService;
     private final StudentMapper mapper;
+
+    @Transactional
+    public AuthResponse createStudentAccount(Long studentId, String login, String password){
+        if(studentId==null) throw new NullPointerException("id is null");
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(()->new StudentNotFoundException(studentId.toString()));
+        if(student.getUserAuth()!=null) throw new StudentAlreadyHasAccountException("id="+studentId);
+        AuthResponse response = authService.register(
+                SignUpRequest.builder()
+                        .login(login)
+                        .password(password)
+                        .role(UserRole.STUDENT)
+                        .build()
+        );
+        student.setUserAuth(
+                userAuthRepository.getReferenceById(response.getAccountId())
+        );
+        return response;
+    }
 
     public Page<StudentInfo> getAllStudents(Pageable pageable){
         return studentRepository.findAll(pageable).map(mapper::toStudentInfo);
@@ -58,7 +80,7 @@ public class StudentService {
         validateFio(fio);
         validatePhoneNumber(phoneNumber);
         Student student = studentRepository.getReferenceById(id);
-        if(!Objects.equals(student.getGroup().getId(), groupId))
+        if((student.getGroup()!=null && groupId==null ) || !Objects.equals(student.getGroup().getId(), groupId))
             studdingGroupService.addStudent(id, groupId);
         student.setFio(fio);
         student.setPhoneNumber(phoneNumber);
@@ -77,7 +99,7 @@ public class StudentService {
         return mapper.toStudentInfo(saved);
     }
 
-    public void validateFio(String fio){
+    private void validateFio(String fio){
         if(fio==null)
             throw new NullPointerException("fio is null");
         if(fio.isBlank() || fio.length()>64)
@@ -85,10 +107,16 @@ public class StudentService {
     }
 
 
-    public void validatePhoneNumber(String phoneNumber){
+    private void validatePhoneNumber(String phoneNumber){
         if(phoneNumber != null && (phoneNumber.isBlank() || phoneNumber.length()>24))
             throw new InvalidPhoneNumberException(phoneNumber);
     }
 
+    public StudentInfo getByAuthId(Long authId){
+        if(authId==null)
+            throw new NullPointerException("authId");
+        return mapper.toStudentInfo(studentRepository.findByUserAuthId(authId)
+                .orElseThrow(()->new UnknownStudentException("userAuthId="+authId)));
+    }
 
 }

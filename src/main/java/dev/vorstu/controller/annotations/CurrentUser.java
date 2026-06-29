@@ -1,4 +1,4 @@
-package dev.vorstu.controller;
+package dev.vorstu.controller.annotations;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
