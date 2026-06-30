@@ -13,6 +13,7 @@ import org.mapstruct.Named;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface GroupMapper {
     StudentPreview toStudentPreview(Student student);
-
+    @Named("toGroupPreview")
+    GroupPreview toGroupPreview(StuddingGroup group);
     GroupInfo toGroupInfo(StuddingGroup studdingGroup);
 }

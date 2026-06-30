@@ -1,4 +1,4 @@
-package dev.vorstu.controller;
+package dev.vorstu.controller.student;
 
 import dev.vorstu.controller.annotations.CurrentUser;
 import dev.vorstu.dto.input.CreateStudentRequest;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("api/students")
+@RequestMapping("/api/students")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STUDENT')")
 @SecurityRequirement(name = "Bearer Authentication")
@@ -20,10 +20,11 @@ public class StudentController {
     private final StudentService studentService;
 
 
-    @PutMapping("me")
+    @PutMapping("/me")
     public StudentInfo editMe(@CurrentUser Long id, @Valid @RequestBody CreateStudentRequest request){
         return changeStudent(studentService.getByAuthId(id).getId(), request);
     }
+
 
     private StudentInfo changeStudent(
             Long studentId,
@@ -31,7 +32,6 @@ public class StudentController {
         return studentService.editStudent(
                 studentId,
                 request.getFio(),
-                request.getGroupId(),
                 request.getPhoneNumber()
         );
     }

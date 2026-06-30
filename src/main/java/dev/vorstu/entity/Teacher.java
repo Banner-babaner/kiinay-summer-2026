@@ -19,16 +19,16 @@ import java.util.Set;
 public class Teacher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
     @NotNull
     @NotBlank
     @Size(max = 64)
     @Column(nullable = false)
-    String fio;
+    private String fio;
     @Size(max = 24)
-    String phoneNumber;
+    private String phoneNumber;
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
-    UserAuth userAuth;
+    private UserAuth userAuth;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "teacher_groups",

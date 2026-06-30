@@ -5,6 +5,8 @@ import dev.vorstu.dto.output.AuthResponse;
 import dev.vorstu.dto.output.StudentInfo;
 import dev.vorstu.entity.Student;
 import dev.vorstu.entity.UserRole;
+import dev.vorstu.exception.common.InvalidFioFormatException;
+import dev.vorstu.exception.common.InvalidPhoneNumberException;
 import dev.vorstu.exception.student.*;
 import dev.vorstu.mapper.StudentMapper;
 import dev.vorstu.repository.StudentRepository;
@@ -70,7 +72,6 @@ public class StudentService {
     public StudentInfo editStudent(
             Long id,
             String fio,
-            Long groupId,
             String phoneNumber
     ) {
         if(id==null)
@@ -80,8 +81,6 @@ public class StudentService {
         validateFio(fio);
         validatePhoneNumber(phoneNumber);
         Student student = studentRepository.getReferenceById(id);
-        if((student.getGroup()!=null && groupId==null ) || !Objects.equals(student.getGroup().getId(), groupId))
-            studdingGroupService.addStudent(id, groupId);
         student.setFio(fio);
         student.setPhoneNumber(phoneNumber);
 
@@ -89,13 +88,11 @@ public class StudentService {
     }
 
     public StudentInfo createStudent(String fio,
-                                     Long groupId,
                                      String phoneNumber) {
         validateFio(fio);
         validatePhoneNumber(phoneNumber);
         Student saved = studentRepository.save(new Student(fio, phoneNumber));
-        if(groupId!=null)
-            studdingGroupService.addStudent(saved.getId(), groupId);
+
         return mapper.toStudentInfo(saved);
     }
 

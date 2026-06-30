@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class CreateStudentRequest {
+public class CreateTeacherRequest {
     @NotBlank
     @Size(max = 64)
     String fio;

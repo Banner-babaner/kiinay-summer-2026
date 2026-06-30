@@ -1,4 +1,4 @@
-package dev.vorstu.exception.student;
+package dev.vorstu.exception.common;
 
 public class InvalidGroupNameException extends RuntimeException {
     public InvalidGroupNameException(String message) {

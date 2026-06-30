@@ -32,9 +32,6 @@ public class AuthService {
 
         UserAuth user = (UserAuth) auth.getPrincipal();
 
-        System.out.println(user.getUsername());
-        System.out.println(user.getAuthorities());
-        System.out.println(user.getRole());
 
         return AuthResponse.builder()
                 .accountId(user.getId())

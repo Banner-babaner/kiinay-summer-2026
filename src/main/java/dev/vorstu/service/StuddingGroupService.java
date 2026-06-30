@@ -1,6 +1,7 @@
 package dev.vorstu.service;
 
 import dev.vorstu.dto.output.GroupInfo;
+import dev.vorstu.dto.output.GroupPreview;
 import dev.vorstu.entity.StuddingGroup;
 import dev.vorstu.entity.Student;
 import dev.vorstu.exception.group.GroupNotFoundException;
@@ -11,6 +12,8 @@ import dev.vorstu.repository.StuddingGroupRepository;
 import dev.vorstu.repository.StudentRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -44,4 +47,15 @@ public class StuddingGroupService {
         return mapper.toGroupInfo(studdingGroupRepository.findById(id)
                 .orElseThrow(()->new GroupNotFoundException("id="+id)));
     }
+
+    public Page<GroupInfo> getTeacherGroups(Long teacherId, Pageable pageable){
+        return studdingGroupRepository.
+                findByTeachersId(teacherId, pageable).map(mapper::toGroupInfo);
+    }
+
+    public GroupInfo getTeachersGroup(Long teacherId, Long groupId){
+        return mapper.toGroupInfo(studdingGroupRepository.findByIdAndTeachersId(groupId, teacherId)
+                .orElseThrow(()->new GroupNotFoundException("id="+groupId)));
+    }
+
 }

@@ -11,8 +11,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = GroupMapper.class)
 public interface StudentMapper {
+    @Mapping(qualifiedByName = "toGroupPreview", target = "group")
     StudentInfo toStudentInfo(Student student);
-    GroupPreview toGroupPreview(StuddingGroup group);
 }
