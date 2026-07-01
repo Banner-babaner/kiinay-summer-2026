@@ -1,7 +1,6 @@
 package dev.vorstu.service;
 
 import dev.vorstu.dto.output.GroupInfo;
-import dev.vorstu.dto.output.GroupPreview;
 import dev.vorstu.entity.StuddingGroup;
 import dev.vorstu.entity.Student;
 import dev.vorstu.exception.group.GroupNotFoundException;
@@ -57,5 +56,16 @@ public class StuddingGroupService {
         return mapper.toGroupInfo(studdingGroupRepository.findByIdAndTeachersId(groupId, teacherId)
                 .orElseThrow(()->new GroupNotFoundException("id="+groupId)));
     }
+
+    public Page<GroupInfo> getTeacherGroupsAuthed(Long teacherUserAuthId, Pageable pageable){
+        return studdingGroupRepository.
+                findByTeachersUserAuthId(teacherUserAuthId, pageable).map(mapper::toGroupInfo);
+    }
+
+    public GroupInfo getTeachersGroupAuthed(Long teacherUserAuthId, Long groupId){
+        return mapper.toGroupInfo(studdingGroupRepository.findByIdAndTeachersId(groupId, teacherUserAuthId)
+                .orElseThrow(()->new GroupNotFoundException("id="+groupId)));
+    }
+
 
 }

@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,11 +28,11 @@ public class AdminStudentController {
     }
 
     @PostMapping
-    public StudentInfo createStudent(@Valid @RequestBody CreateStudentRequest newStudent){
-        return studentService.createStudent(
+    public ResponseEntity<StudentInfo> createStudent(@Valid @RequestBody CreateStudentRequest newStudent){
+        return ResponseEntity.status(HttpStatus.CREATED).body(studentService.createStudent(
                 newStudent.getFio(),
                 newStudent.getPhoneNumber()
-        );
+        ));
     }
 
     @GetMapping("/filter")
@@ -50,18 +52,19 @@ public class AdminStudentController {
     }
 
     @PostMapping("/{id}/account")
-    public AuthResponse createStudentAccount(Long studentId, String login, String password){
-        return studentService.createStudentAccount(studentId, login, password);
+    public ResponseEntity<AuthResponse> createStudentAccount(Long studentId, String login, String password){
+        return ResponseEntity.status(HttpStatus.CREATED).
+                body(studentService.createStudentAccount(studentId, login, password));
     }
 
     @PutMapping("/{id}")
-    public StudentInfo changeStudent(
+    public ResponseEntity<StudentInfo> changeStudent(
             @PathVariable("id") Long studentId,
             @RequestBody CreateStudentRequest request){
-        return studentService.editStudent(
+        return ResponseEntity.status(HttpStatus.CREATED).body(studentService.editStudent(
                 studentId,
                 request.getFio(),
                 request.getPhoneNumber()
-        );
+        ));
     }
 }

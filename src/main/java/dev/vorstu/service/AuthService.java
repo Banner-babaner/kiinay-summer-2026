@@ -5,12 +5,15 @@ import dev.vorstu.dto.input.SignUpRequest;
 import dev.vorstu.dto.output.AuthResponse;
 import dev.vorstu.entity.UserAuth;
 import dev.vorstu.exception.auth.DuplicateLoginException;
+import dev.vorstu.exception.auth.InvalidRefreshTokenException;
 import dev.vorstu.repository.UserAuthRepository;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +39,23 @@ public class AuthService {
         return AuthResponse.builder()
                 .accountId(user.getId())
                 .login(request.getLogin())
-                .accessToken(jwtService.generateToken(user))
+                .accessToken(jwtService.generateAccessToken(user))
+                .refreshToken(jwtService.generateRefreshToken(user))
+                .build();
+    }
+
+    public AuthResponse refreshAuth(String refreshToken){
+        if(jwtService.isTokenExpired(refreshToken))
+            throw new InvalidRefreshTokenException("expired");
+        String login =  jwtService.extractUsername(refreshToken);
+        UserAuth user = repository.findByLogin(login)
+                .orElseThrow(()->new UsernameNotFoundException(login));
+
+        return AuthResponse.builder()
+                .accountId(user.getId())
+                .login(user.getLogin())
+                .accessToken(jwtService.generateAccessToken(user))
+                .refreshToken(jwtService.generateRefreshToken(user))
                 .build();
     }
 
@@ -55,7 +74,9 @@ public class AuthService {
         return AuthResponse.builder()
                 .accountId(saved.getId())
                 .login(saved.getLogin())
-                .accessToken(jwtService.generateToken(saved))
+                .accessToken(jwtService.generateAccessToken(saved))
+                .refreshToken(jwtService.generateRefreshToken(saved))
                 .build();
     }
+
 }

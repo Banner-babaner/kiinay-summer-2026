@@ -2,12 +2,14 @@ package dev.vorstu.service;
 
 import dev.vorstu.dto.input.SignUpRequest;
 import dev.vorstu.dto.output.AuthResponse;
+import dev.vorstu.dto.output.GroupInfo;
 import dev.vorstu.dto.output.StudentInfo;
 import dev.vorstu.entity.Student;
 import dev.vorstu.entity.UserRole;
 import dev.vorstu.exception.common.InvalidFioFormatException;
 import dev.vorstu.exception.common.InvalidPhoneNumberException;
 import dev.vorstu.exception.student.*;
+import dev.vorstu.exception.teacher.DoesntTeachThisGroupException;
 import dev.vorstu.mapper.StudentMapper;
 import dev.vorstu.repository.StudentRepository;
 import dev.vorstu.repository.UserAuthRepository;
@@ -27,6 +29,7 @@ public class StudentService {
     private final UserAuthRepository userAuthRepository;
     private final StuddingGroupService studdingGroupService;
     private final StudentMapper mapper;
+
 
     @Transactional
     public AuthResponse createStudentAccount(Long studentId, String login, String password){
@@ -114,6 +117,16 @@ public class StudentService {
             throw new NullPointerException("authId");
         return mapper.toStudentInfo(studentRepository.findByUserAuthId(authId)
                 .orElseThrow(()->new UnknownStudentException("userAuthId="+authId)));
+    }
+
+    public StudentInfo getTeachingStudent(Long studentId, Long teacherId){
+        return mapper.toStudentInfo(studentRepository.findByIdAndTeacherIdWithGroup(studentId,
+                teacherId).orElseThrow(()->new StudentNotFoundException("id="+studentId)));
+    }
+
+    public StudentInfo getTeachingStudentAuthed(Long studentId, Long teacherAuthId){
+        return mapper.toStudentInfo(studentRepository.findByIdAndTeacherUserAuthIdWithGroup(studentId,
+                teacherAuthId).orElseThrow(()->new StudentNotFoundException("id="+studentId)));
     }
 
 }

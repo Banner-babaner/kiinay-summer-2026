@@ -1,5 +1,6 @@
 package dev.vorstu.service;
 
+import dev.vorstu.entity.UserAuth;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -18,42 +19,71 @@ import java.util.function.Function;
 public class JwtService {
 
     @Value("${jwt.secret}")
-    private String secretKey;
+    private String secret;
 
     @Value("${jwt.access.expiration}")
     private Long accessExpiration;
 
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+    @Value("${jwt.refresh.expiration}")
+    private Long refreshExpiration;
+
+    private SecretKey signedKey;
+
+
+    private SecretKey getSigningKey() {
+        if(signedKey!=null) return signedKey;
+        byte[] keyBytes = secret.getBytes();
+        signedKey = Keys.hmacShaKeyFor(keyBytes);
+        return signedKey;
     }
 
 
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
-    }
+    public String generateAccessToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "access");
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        if (userDetails instanceof UserAuth) {
+            claims.put("id", ((UserAuth) userDetails).getId());
+        }
+
         return Jwts.builder()
-                .claims(extraClaims)
+                .claims(claims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessExpiration))
-                .signWith(getSignInKey())
+                .signWith(getSigningKey())
                 .compact();
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    public String generateRefreshToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "refresh");
+
+        return Jwts.builder()
+                .claims(claims)
+                .subject(userDetails.getUsername())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + refreshExpiration))
+                .signWith(getSigningKey())
+                .compact();
     }
 
-    private boolean isTokenExpired(String token) {
+
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String login = extractUsername(token);
+        return (login.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    }
+
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
@@ -63,16 +93,9 @@ public class JwtService {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .verifyWith(getSignInKey())
+                .verifyWith(getSigningKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
     }
-
-    private SecretKey getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
-
-
 }

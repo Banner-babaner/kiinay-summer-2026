@@ -36,16 +36,13 @@ public class TeacherGroupController {
             @CurrentUser Long id,
             @ParameterObject
             Pageable pageable){
-        TeacherInfo teacher = teacherService.getByAuthId(id);
-        return studdingGroupService.getTeacherGroups(teacher.getId(), pageable);
+        return studdingGroupService.getTeacherGroupsAuthed(id, pageable);
     }
 
-    /// TODO Перенести в бд и сервис
     /// TODONE
     @GetMapping("/my/{id}")
     public GroupInfo myGroup(@CurrentUser Long id, @PathVariable("id") Long groupId){
-        TeacherInfo teacher = teacherService.getByAuthId(id);
-        return studdingGroupService.getTeachersGroup(teacher.getId(), groupId);
+        return studdingGroupService.getTeachersGroupAuthed(id, groupId);
     }
 
 

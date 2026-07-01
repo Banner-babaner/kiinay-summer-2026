@@ -81,6 +81,15 @@ public class TeacherService {
         return mapper.toTeacherInfo(repository.save(teacher));
     }
 
+    @Transactional
+    public TeacherInfo createTeacher(CreateTeacherRequest request){
+        Teacher teacher = Teacher.builder()
+                .fio(request.getFio())
+                .phoneNumber(request.getPhoneNumber())
+                .build();
+        return mapper.toTeacherInfo(repository.save(teacher));
+    }
+
     public TeacherInfo getByAuthId(Long authId){
         if(authId==null)
             throw new NullPointerException("authId");
