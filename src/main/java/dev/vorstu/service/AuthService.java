@@ -5,14 +5,12 @@ import dev.vorstu.dto.input.SignUpRequest;
 import dev.vorstu.dto.output.AuthResponse;
 import dev.vorstu.entity.UserAuth;
 import dev.vorstu.exception.auth.DuplicateLoginException;
-import dev.vorstu.exception.auth.InvalidRefreshTokenException;
+import dev.vorstu.exception.auth.InvalidTokenException;
 import dev.vorstu.repository.UserAuthRepository;
-import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -46,7 +44,7 @@ public class AuthService {
 
     public AuthResponse refreshAuth(String refreshToken){
         if(jwtService.isTokenExpired(refreshToken))
-            throw new InvalidRefreshTokenException("expired");
+            throw new InvalidTokenException("expired");
         String login =  jwtService.extractUsername(refreshToken);
         UserAuth user = repository.findByLogin(login)
                 .orElseThrow(()->new UsernameNotFoundException(login));

@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -13,8 +14,10 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
+@Slf4j
 @Service
 public class JwtService {
 
@@ -41,6 +44,11 @@ public class JwtService {
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
+
+    public String extractTokenType(String token){
+        return extractClaim(token, (Claims)->Claims.get("type", String.class));
+    }
+
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
@@ -78,8 +86,21 @@ public class JwtService {
     }
 
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String login = extractUsername(token);
+    public boolean isAccessTokenValid(String token, UserDetails userDetails) {
+        String login = extractUsername(token);
+        if(!Objects.equals(extractTokenType(token), "access")){
+            log.warn("Using refresh token instead access token by {}", login);
+            return false;
+        }
+        return (login.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    }
+
+    public boolean isRefreshTokenValid(String token, UserDetails userDetails) {
+        String login = extractUsername(token);
+        if(!Objects.equals(extractTokenType(token), "refresh")){
+            log.warn("Using access token instead refresh token by {}", login);
+            return false;
+        }
         return (login.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
