@@ -30,7 +30,6 @@ public class Student {
     @Size(max = 64)
     @Column(nullable = false)
     private String fio;
-    @Size(max = 64)
     @Size(max = 24)
     private String phoneNumber;
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})

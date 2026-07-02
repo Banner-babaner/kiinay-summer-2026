@@ -5,6 +5,7 @@ import dev.vorstu.dto.output.AuthResponse;
 import dev.vorstu.dto.output.GroupInfo;
 import dev.vorstu.dto.output.StudentInfo;
 import dev.vorstu.entity.Student;
+import dev.vorstu.entity.UserAuth;
 import dev.vorstu.entity.UserRole;
 import dev.vorstu.exception.common.InvalidFioFormatException;
 import dev.vorstu.exception.common.InvalidPhoneNumberException;
@@ -13,6 +14,8 @@ import dev.vorstu.exception.teacher.DoesntTeachThisGroupException;
 import dev.vorstu.mapper.StudentMapper;
 import dev.vorstu.repository.StudentRepository;
 import dev.vorstu.repository.UserAuthRepository;
+import dev.vorstu.validator.FioValidator;
+import dev.vorstu.validator.PhoneValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.regex.Matcher;
 
 @Service
 @RequiredArgsConstructor
@@ -81,8 +85,8 @@ public class StudentService {
             throw new NullPointerException("id is null");
         if(!studentRepository.existsById(id))
             throw new StudentNotFoundException(id.toString());
-        validateFio(fio);
-        validatePhoneNumber(phoneNumber);
+        FioValidator.validate(fio);
+        PhoneValidator.validate(phoneNumber);
         Student student = studentRepository.getReferenceById(id);
         student.setFio(fio);
         student.setPhoneNumber(phoneNumber);
@@ -92,25 +96,15 @@ public class StudentService {
 
     public StudentInfo createStudent(String fio,
                                      String phoneNumber) {
-        validateFio(fio);
-        validatePhoneNumber(phoneNumber);
+        FioValidator.validate(fio);
+        PhoneValidator.validate(phoneNumber);
         Student saved = studentRepository.save(new Student(fio, phoneNumber));
 
         return mapper.toStudentInfo(saved);
     }
 
-    private void validateFio(String fio){
-        if(fio==null)
-            throw new NullPointerException("fio is null");
-        if(fio.isBlank() || fio.length()>64)
-            throw new InvalidFioFormatException(fio);
-    }
 
 
-    private void validatePhoneNumber(String phoneNumber){
-        if(phoneNumber != null && (phoneNumber.isBlank() || phoneNumber.length()>24))
-            throw new InvalidPhoneNumberException(phoneNumber);
-    }
 
     public StudentInfo getByAuthId(Long authId){
         if(authId==null)
@@ -129,4 +123,15 @@ public class StudentService {
                 teacherAuthId).orElseThrow(()->new StudentNotFoundException("id="+studentId)));
     }
 
+    @Transactional
+    public void deleteStudentAccount(Long studentId){
+        if(studentId==null)
+            throw new NullPointerException("studentId");
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(()->new StudentNotFoundException("id="+studentId));
+        UserAuth auth = student.getUserAuth();
+        if(auth==null) return;
+        student.setUserAuth(null);
+        userAuthRepository.delete(auth);
+    }
 }

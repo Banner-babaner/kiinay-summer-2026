@@ -22,3 +22,8 @@ databaseChangeLog:
       file: seeders/004_create_admin_for_shadowfrog.sql
       relativeToChangelogFile: true
       context: dev
+
+  - include:
+      file: db/changelog/migrations/006_phone_num_constraint.sql
+  - include:
+     file: db/changelog/migrations/007_phone_num_constraint_admins_teachers.sql

@@ -3,10 +3,12 @@ package dev.vorstu.controller.admin;
 import dev.vorstu.dto.input.CreateStudentRequest;
 import dev.vorstu.dto.output.AuthResponse;
 import dev.vorstu.dto.output.StudentInfo;
+import dev.vorstu.service.StuddingGroupService;
 import dev.vorstu.service.StudentService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @SecurityRequirement(name = "Bearer Authentication")
 public class AdminStudentController {
     private final StudentService studentService;
+    private final StuddingGroupService groupService;
 
     @GetMapping(value = "/{id}")
     public StudentInfo getStudentById(@PathVariable("id") Long id){
@@ -37,12 +40,15 @@ public class AdminStudentController {
 
     @GetMapping("/filter")
     public Page<StudentInfo> getFilteredStudents(@RequestParam("group") String group,
+                                                 @ParameterObject
                                                  Pageable pageable){
         return studentService.getStudentsInGroup(group, pageable);
     }
 
     @GetMapping
-    public Page<StudentInfo> getAllStudents(Pageable pageable){
+    public Page<StudentInfo> getAllStudents(
+            @ParameterObject
+            Pageable pageable){
         return studentService.getAllStudents(pageable);
     }
 
@@ -67,4 +73,18 @@ public class AdminStudentController {
                 request.getPhoneNumber()
         ));
     }
+
+    @PutMapping("/{studentId}/{groupId}")
+    public void moveToGroup(@PathVariable("studentId") Long studentId,
+                            @PathVariable("groupId") Long groupId){
+        groupService.addStudent(studentId, groupId);
+    }
+
+    @DeleteMapping("/{id}/account")
+    public void deleteAccountIfExists(@PathVariable("id") Long studentId){
+        studentService.deleteStudentAccount(studentId);
+    }
+
+
+
 }

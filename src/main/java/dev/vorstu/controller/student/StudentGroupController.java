@@ -19,7 +19,7 @@ public class StudentGroupController {
     private final StuddingGroupService groupService;
     private final StudentService studentService;
 
-    @PutMapping("/my")
+    @GetMapping
     public GroupInfo addStudentToGroup(@CurrentUser Long authId){
         StudentInfo student = studentService.getByAuthId(authId);
         if(student.getGroup()==null) return null;

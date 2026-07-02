@@ -44,6 +44,11 @@ public class AdminTeacherController {
                 .body(teacherService.editTeacher(teacherId, request));
     }
 
+    @DeleteMapping("/{id}")
+    public Long deleteTeacherById(@PathVariable("id") Long teacherId){
+        return teacherService.deleteTeacher(teacherId);
+    }
+
     @PostMapping
     public ResponseEntity<TeacherInfo> createTeacher(
             @Valid @RequestBody CreateTeacherRequest request
@@ -55,7 +60,7 @@ public class AdminTeacherController {
 
     @PostMapping("/{id}/account")
     public ResponseEntity<AuthResponse> createTeacherAccount(
-            @PathVariable("id") @Valid @NotNull Long teacherId,
+            @PathVariable("id") Long teacherId,
             String login,
             String password
     ){
@@ -63,5 +68,10 @@ public class AdminTeacherController {
                 .body(teacherService.createTeacherAccount(teacherId,
                         login,
                         password));
+    }
+
+    @DeleteMapping("/{id}/account")
+    public void deleteAccountIfExists(@PathVariable("id") Long teacherId){
+        teacherService.deleteTeacherAccount(teacherId);
     }
 }

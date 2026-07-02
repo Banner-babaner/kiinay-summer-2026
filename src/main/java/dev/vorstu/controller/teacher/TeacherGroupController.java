@@ -31,7 +31,7 @@ public class TeacherGroupController {
     private final StuddingGroupService studdingGroupService;
 
 
-    @GetMapping("/my")
+    @GetMapping
     public Page<GroupInfo> myGroups(
             @CurrentUser Long id,
             @ParameterObject
@@ -39,8 +39,7 @@ public class TeacherGroupController {
         return studdingGroupService.getTeacherGroupsAuthed(id, pageable);
     }
 
-    /// TODONE
-    @GetMapping("/my/{id}")
+    @GetMapping("/{id}")
     public GroupInfo myGroup(@CurrentUser Long id, @PathVariable("id") Long groupId){
         return studdingGroupService.getTeachersGroupAuthed(id, groupId);
     }

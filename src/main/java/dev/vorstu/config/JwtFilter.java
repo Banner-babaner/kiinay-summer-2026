@@ -40,7 +40,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
-            log.info("Unknown user");
             return;
         }
 
@@ -57,6 +56,7 @@ public class JwtFilter extends OncePerRequestFilter {
                         null,
                         userDetails.getAuthorities()
                 );
+                log.info("Resolving request {} for authorised user {}", request.getRequestURL(),userDetails.getUsername());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }

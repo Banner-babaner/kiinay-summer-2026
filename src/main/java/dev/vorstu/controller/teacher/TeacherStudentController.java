@@ -21,7 +21,7 @@ public class TeacherStudentController {
     private final StudentService studentService;
     private final TeacherService teacherService;
 
-    @GetMapping("my/{studentId}")
+    @GetMapping("/{studentId}")
     public StudentInfo getMyStudents(
             @CurrentUser Long authId,
             @PathVariable("studentId")

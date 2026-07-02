@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface StuddingGroupRepository extends JpaRepository<StuddingGroup, Long> {
     Optional<StuddingGroup> findByName(String name);
 
+    boolean existsByName(String name);
+
     Page<StuddingGroup> findByTeachersUserAuthId(Long teacherAuthId, Pageable pageable);
 
     Page<StuddingGroup> findByTeachersId(Long teacherId, Pageable pageable);
