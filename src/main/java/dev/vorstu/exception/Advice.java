@@ -1,9 +1,9 @@
 package dev.vorstu.exception;
 
-import dev.vorstu.exception.auth.InvalidTokenException;
-import dev.vorstu.exception.auth.InvalidTokenTypeException;
+import dev.vorstu.exception.auth.*;
 import dev.vorstu.exception.common.InvalidFioFormatException;
 import dev.vorstu.exception.common.InvalidPhoneNumberException;
+import dev.vorstu.exception.group.DuplicateGroupNameException;
 import dev.vorstu.exception.group.GroupNotFoundException;
 import dev.vorstu.exception.group.NotEmptyGroupException;
 import dev.vorstu.exception.group.StudentAlreadyPresentsException;
@@ -66,10 +66,6 @@ public class Advice {
         return buildErrorResponse(e.getMessage(), HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleDefault(RuntimeException e) {
-        return buildErrorResponse(e.getMessage(), HttpStatus.FORBIDDEN);
-    }
 
     @ExceptionHandler(StudentAlreadyHasAccountException.class)
     public ResponseEntity<ErrorResponse> handleStudentAlreadyHasAccount(StudentAlreadyHasAccountException e) {
@@ -86,7 +82,31 @@ public class Advice {
         return buildErrorResponse(e.getMessage(), HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(DuplicateLoginException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateLogin(DuplicateLoginException e) {
+        return buildErrorResponse(e.getMessage(), HttpStatus.CONFLICT);
+    }
 
+    @ExceptionHandler(DuplicateGroupNameException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateGroupName(DuplicateGroupNameException e) {
+        return buildErrorResponse(e.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(InvalidPasswordFormatException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidPasswordFormat(InvalidPasswordFormatException e) {
+        return buildErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidLoginFormatException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidLoginFormat(InvalidLoginFormatException e) {
+        return buildErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    // DEFAULT
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleDefault(RuntimeException e) {
+        return buildErrorResponse(e.getMessage(), HttpStatus.FORBIDDEN);
+    }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(String message, HttpStatus status) {
         return ResponseEntity.status(status)

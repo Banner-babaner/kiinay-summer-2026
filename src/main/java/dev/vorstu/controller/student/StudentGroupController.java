@@ -20,10 +20,10 @@ public class StudentGroupController {
     private final StudentService studentService;
 
     @GetMapping
-    public GroupInfo addStudentToGroup(@CurrentUser Long authId){
+    public GroupInfo getGroup(@CurrentUser Long authId){
         StudentInfo student = studentService.getByAuthId(authId);
         if(student.getGroup()==null) return null;
-        return groupService.getGroup(student.getGroup().getId());
+        return groupService.getStudentGroupAuthed(authId);
     }
 
 }

@@ -20,4 +20,6 @@ public interface StuddingGroupRepository extends JpaRepository<StuddingGroup, Lo
 
     Optional<StuddingGroup> findByIdAndTeachersUserAuthId(Long groupId, Long teacherId);
 
+    Optional<StuddingGroup> findByStudentsUserAuthId(Long authId);
+
 }

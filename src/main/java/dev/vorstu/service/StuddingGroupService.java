@@ -104,6 +104,12 @@ public class StuddingGroupService {
         return groupId;
     }
 
+    public GroupInfo getStudentGroupAuthed(Long authId){
+        StuddingGroup group =  studdingGroupRepository.findByStudentsUserAuthId(authId).orElse(null);
+        if(group==null) return null;
+        return mapper.toGroupInfo(group);
+    }
+
     public Page<GroupInfo> getAllGroups(Pageable pageable){
         return studdingGroupRepository.findAll(pageable).map(mapper::toGroupInfo);
     }

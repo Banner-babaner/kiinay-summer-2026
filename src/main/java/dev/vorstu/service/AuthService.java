@@ -5,6 +5,8 @@ import dev.vorstu.dto.input.SignUpRequest;
 import dev.vorstu.dto.output.AuthResponse;
 import dev.vorstu.entity.UserAuth;
 import dev.vorstu.exception.auth.DuplicateLoginException;
+import dev.vorstu.exception.auth.InvalidLoginFormatException;
+import dev.vorstu.exception.auth.InvalidPasswordFormatException;
 import dev.vorstu.exception.auth.InvalidTokenException;
 import dev.vorstu.repository.UserAuthRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,14 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     public AuthResponse login(SignInRequest request) {
+
+        if(request.getLogin()==null || request.getLogin().length()>70){
+            throw new InvalidLoginFormatException("Login must be a string containing 0-70 chars");
+        }
+
+        if(request.getPassword()==null || request.getPassword().length()>70){
+            throw new InvalidPasswordFormatException("Login must be a string containing 0-70 chars");
+        }
 
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
