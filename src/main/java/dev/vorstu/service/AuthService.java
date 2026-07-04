@@ -3,6 +3,7 @@ package dev.vorstu.service;
 import dev.vorstu.dto.input.SignInRequest;
 import dev.vorstu.dto.input.SignUpRequest;
 import dev.vorstu.dto.output.AuthResponse;
+import dev.vorstu.entity.Authable;
 import dev.vorstu.entity.UserAuth;
 import dev.vorstu.exception.auth.DuplicateLoginException;
 import dev.vorstu.exception.auth.InvalidLoginFormatException;
@@ -68,17 +69,9 @@ public class AuthService {
     }
 
 
-    public AuthResponse register(SignUpRequest request) {
-        if(repository.existsByLogin(request.getLogin()))
-            throw new DuplicateLoginException(request.getLogin());
-        UserAuth auth = UserAuth.builder()
-                .login(request.getLogin())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
-                .build();
-        UserAuth saved = repository.save(auth);
-
-
+    public AuthResponse register(SignUpRequest request, Authable person){
+        UserAuth saved = registerAccount(request);
+        person.setAuth(saved);
         return AuthResponse.builder()
                 .accountId(saved.getId())
                 .login(saved.getLogin())
@@ -87,4 +80,26 @@ public class AuthService {
                 .build();
     }
 
+
+    public AuthResponse register(SignUpRequest request) {
+        UserAuth saved = registerAccount(request);
+        return AuthResponse.builder()
+                .accountId(saved.getId())
+                .login(saved.getLogin())
+                .accessToken(jwtService.generateAccessToken(saved))
+                .refreshToken(jwtService.generateRefreshToken(saved))
+                .build();
+    }
+
+
+    private UserAuth registerAccount(SignUpRequest request){
+        if(repository.existsByLogin(request.getLogin()))
+        throw new DuplicateLoginException(request.getLogin());
+        UserAuth auth = UserAuth.builder()
+                .login(request.getLogin())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(request.getRole())
+                .build();
+        return repository.save(auth);
+    }
 }

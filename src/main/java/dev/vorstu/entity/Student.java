@@ -15,7 +15,7 @@ import javax.swing.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Student {
+public class Student implements Authable{
 
     public Student(String fio, String phoneNumber) {
         this.fio = fio;
@@ -36,4 +36,9 @@ public class Student {
     private UserAuth userAuth;
     @ManyToOne
     private StuddingGroup group;
+
+    @Override
+    public void setAuth(UserAuth auth) {
+        userAuth=auth;
+    }
 }

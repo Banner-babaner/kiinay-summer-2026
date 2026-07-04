@@ -41,10 +41,8 @@ public class TeacherService {
                         .login(login)
                         .password(password)
                         .role(UserRole.TEACHER)
-                        .build()
-        );
-        teacher.setUserAuth(
-                userAuthRepository.getReferenceById(response.getAccountId())
+                        .build(),
+                teacher
         );
         return response;
     }

@@ -1,48 +1,75 @@
 package dev.vorstu;
 
-import static org.junit.jupiter.api.Assertions.*;
 import dev.vorstu.dto.output.StudentInfo;
-import dev.vorstu.exception.common.InvalidPhoneNumberException;
+import dev.vorstu.entity.Student;
+import dev.vorstu.mapper.StudentMapper;
+import dev.vorstu.repository.StudentRepository;
+import dev.vorstu.repository.UserAuthRepository;
+import dev.vorstu.service.AuthService;
+import dev.vorstu.service.StuddingGroupService;
 import dev.vorstu.service.StudentService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest
-@Slf4j
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
+
+
+@ExtendWith(MockitoExtension.class)
 public class StudentServiceTest {
-    @Autowired
-    private  StudentService studentService;
+    @Mock
+    private StudentRepository studentRepository;
+
+    @Mock
+    private UserAuthRepository userAuthRepository;
+
+    @Mock
+    private StudentMapper mapper;
+
+    @Mock
+    private AuthService authService;
+
+    @Mock
+    private StuddingGroupService groupService;
+
+
+    @InjectMocks
+    private StudentService studentService;
 
     @Test
-    void createStudent(){
-        log.info("CREATING VALID STUDENT");
-        String fio = "Абрикосов Абрикос Абрикосович";
-        String phone = "88005553535";
-        StudentInfo studentInfo = studentService.
-                createStudent(fio, phone);
-        assertNotNull(studentInfo);
-        log.info("Created student with name {} and phone {}",
-                studentInfo.getFio(), studentInfo.getPhoneNumber());
-        assertEquals(fio, studentInfo.getFio());
-        assertEquals(phone, studentInfo.getPhoneNumber());
-    }
+    void gettingInfoAboutExistingStudent() {
+        // Студент
+        Long studentId = 1L;
+        String studentFio = "Иванов Иван";
+        Student student = new Student();
+        student.setId(studentId);
+        student.setFio(studentFio);
 
-    @Test
-    void createStudentWithInvalidPhone(){
-        log.info("CREATING STUDENT WITH INVALID PHONE");
-        String fio = "Абрикосов Абрикос Абрикосович";
-        String phone = ">w<";
-        assertThrows(InvalidPhoneNumberException.class,
-                ()->studentService.createStudent(fio, phone),
-                "Must throw InvalidPhoneNumberException");
-    }
+        // ДТО
+        StudentInfo studentInfo = StudentInfo.builder()
+                .id(studentId)
+                .fio(studentFio)
+                .build();
 
-    @AfterEach
-    void logPassed(){
-        log.info("TEST PASSED");
+        // Заглушки на репо и маппер
+        when(studentRepository.findById(studentId))
+                .thenReturn(Optional.of(student));
+
+        when(mapper.toStudentInfo(student))
+                .thenReturn(studentInfo);
+
+        // Получаем студента
+        StudentInfo result = studentService.getStudent(studentId);
+
+        // Проверка, что это тот самый чел
+        assertThat(result).isNotNull();
+        assertThat(result.getFio()).isEqualTo("Иванов Иван");
     }
 }

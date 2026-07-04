@@ -31,7 +31,6 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final AuthService authService;
     private final UserAuthRepository userAuthRepository;
-    private final StuddingGroupService studdingGroupService;
     private final StudentMapper mapper;
 
 
@@ -46,10 +45,8 @@ public class StudentService {
                         .login(login)
                         .password(password)
                         .role(UserRole.STUDENT)
-                        .build()
-        );
-        student.setUserAuth(
-                userAuthRepository.getReferenceById(response.getAccountId())
+                        .build(),
+                student
         );
         return response;
     }

@@ -16,7 +16,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Teacher {
+public class Teacher implements Authable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,4 +36,9 @@ public class Teacher {
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
     private Set<StuddingGroup> groups;
+
+    @Override
+    public void setAuth(UserAuth auth) {
+        userAuth=auth;
+    }
 }
