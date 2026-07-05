@@ -2,6 +2,7 @@ package dev.vorstu;
 
 import dev.vorstu.dto.output.StudentInfo;
 import dev.vorstu.entity.Student;
+import dev.vorstu.exception.student.StudentNotFoundException;
 import dev.vorstu.mapper.StudentMapper;
 import dev.vorstu.repository.StudentRepository;
 import dev.vorstu.repository.UserAuthRepository;
@@ -18,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 
@@ -71,5 +73,16 @@ public class StudentServiceTest {
         // Проверка, что это тот самый чел
         assertThat(result).isNotNull();
         assertThat(result.getFio()).isEqualTo("Иванов Иван");
+    }
+
+    @Test
+    void gettingInfoAboutExceptingStudent() {
+        Long studentId = 1L;
+
+        when(studentRepository.findById(studentId))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(()->studentService.getStudent(studentId))
+                .isInstanceOf(StudentNotFoundException.class);
     }
 }
