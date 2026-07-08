@@ -9,7 +9,10 @@ import dev.vorstu.exception.auth.DuplicateLoginException;
 import dev.vorstu.exception.auth.InvalidLoginFormatException;
 import dev.vorstu.exception.auth.InvalidPasswordFormatException;
 import dev.vorstu.exception.auth.InvalidTokenException;
+import dev.vorstu.parser.CsvParser;
+import dev.vorstu.repository.InviteApplicationRepository;
 import dev.vorstu.repository.UserAuthRepository;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +20,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +31,7 @@ public class AuthService {
     private final UserAuthRepository repository;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthResponse login(SignInRequest request) {
+    public AuthResponse login(@NonNull SignInRequest request) {
 
         if(request.getLogin()==null || request.getLogin().length()>70){
             throw new InvalidLoginFormatException("Login must be a string containing 0-70 chars");
@@ -53,7 +58,7 @@ public class AuthService {
                 .build();
     }
 
-    public AuthResponse refreshAuth(String refreshToken){
+    public AuthResponse refreshAuth(@NonNull String refreshToken){
         if(jwtService.isTokenExpired(refreshToken))
             throw new InvalidTokenException("expired");
         String login =  jwtService.extractUsername(refreshToken);
@@ -69,7 +74,7 @@ public class AuthService {
     }
 
 
-    public AuthResponse register(SignUpRequest request, Authable person){
+    public AuthResponse register(@NonNull SignUpRequest request, @NonNull Authable person){
         UserAuth saved = registerAccount(request);
         person.setAuth(saved);
         return AuthResponse.builder()
@@ -92,9 +97,15 @@ public class AuthService {
     }
 
 
+    public void checkDuplicateLogins(List<String> logins){
+        List<String> duplicates = repository.findLoginByLoginIn(logins);
+        if(!duplicates.isEmpty())
+            throw new DuplicateLoginException(duplicates);
+    }
+
     private UserAuth registerAccount(SignUpRequest request){
         if(repository.existsByLogin(request.getLogin()))
-        throw new DuplicateLoginException(request.getLogin());
+            throw new DuplicateLoginException(request.getLogin());
         UserAuth auth = UserAuth.builder()
                 .login(request.getLogin())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -102,4 +113,6 @@ public class AuthService {
                 .build();
         return repository.save(auth);
     }
+
+
 }

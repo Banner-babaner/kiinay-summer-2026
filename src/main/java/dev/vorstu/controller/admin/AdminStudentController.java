@@ -32,10 +32,7 @@ public class AdminStudentController {
 
     @PostMapping
     public ResponseEntity<StudentInfo> createStudent(@Valid @RequestBody CreateStudentRequest newStudent){
-        return ResponseEntity.status(HttpStatus.CREATED).body(studentService.createStudent(
-                newStudent.getFio(),
-                newStudent.getPhoneNumber()
-        ));
+        return ResponseEntity.status(HttpStatus.CREATED).body(studentService.createStudent(newStudent));
     }
 
     @GetMapping("/filter")
@@ -69,9 +66,7 @@ public class AdminStudentController {
             @RequestBody CreateStudentRequest request){
         return ResponseEntity.status(HttpStatus.CREATED).body(studentService.editStudent(
                 studentId,
-                request.getFio(),
-                request.getPhoneNumber()
-        ));
+                request));
     }
 
     @PutMapping("/{studentId}/{groupId}")

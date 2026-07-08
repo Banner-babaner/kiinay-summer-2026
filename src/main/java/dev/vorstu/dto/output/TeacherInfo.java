@@ -22,4 +22,5 @@ public class TeacherInfo {
     private String fio;
     private String phoneNumber;
     private Set<GroupPreview> groups;
+    private String email;
 }

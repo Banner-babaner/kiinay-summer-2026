@@ -25,8 +25,8 @@ public class Teacher implements Authable {
     @Size(max = 64)
     @Column(nullable = false)
     private String fio;
-    @Size(max = 24)
-    private String phoneNumber;
+    @Embedded
+    private ContactData contacts;
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
     private UserAuth userAuth;
     @ManyToMany(fetch = FetchType.LAZY)

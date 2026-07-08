@@ -1,9 +1,11 @@
 package dev.vorstu.service;
 
+import dev.vorstu.dto.input.CreateStudentRequest;
 import dev.vorstu.dto.input.SignUpRequest;
 import dev.vorstu.dto.output.AuthResponse;
 import dev.vorstu.dto.output.GroupInfo;
 import dev.vorstu.dto.output.StudentInfo;
+import dev.vorstu.entity.ContactData;
 import dev.vorstu.entity.Student;
 import dev.vorstu.entity.UserAuth;
 import dev.vorstu.entity.UserRole;
@@ -17,15 +19,18 @@ import dev.vorstu.repository.UserAuthRepository;
 import dev.vorstu.validator.FioValidator;
 import dev.vorstu.validator.PhoneValidator;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
 
 @Service
+@Validated
 @RequiredArgsConstructor
 public class StudentService {
     private final StudentRepository studentRepository;
@@ -75,27 +80,27 @@ public class StudentService {
     @Transactional
     public StudentInfo editStudent(
             Long id,
-            String fio,
-            String phoneNumber
+            @Valid CreateStudentRequest request
     ) {
         if(id==null)
             throw new NullPointerException("id is null");
         if(!studentRepository.existsById(id))
             throw new StudentNotFoundException(id.toString());
-        FioValidator.validate(fio);
-        PhoneValidator.validate(phoneNumber);
         Student student = studentRepository.getReferenceById(id);
-        student.setFio(fio);
-        student.setPhoneNumber(phoneNumber);
+        student.setFio(request.getFio());
+        student.setContacts(ContactData.builder()
+                        .email(request.getEmail())
+                        .phoneNumber(request.getPhoneNumber())
+                .build());
 
         return mapper.toStudentInfo(studentRepository.save(student));
     }
 
-    public StudentInfo createStudent(String fio,
-                                     String phoneNumber) {
-        FioValidator.validate(fio);
-        PhoneValidator.validate(phoneNumber);
-        Student saved = studentRepository.save(new Student(fio, phoneNumber));
+    public StudentInfo createStudent(@Valid CreateStudentRequest request) {
+        Student saved = studentRepository.save(Student.builder()
+                        .fio(request.getFio())
+                        .contacts(new ContactData(request.getPhoneNumber(), request.getEmail()))
+                .build());
 
         return mapper.toStudentInfo(saved);
     }

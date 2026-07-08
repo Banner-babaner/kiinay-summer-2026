@@ -8,6 +8,8 @@ import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = GroupMapper.class)
 public interface TeacherMapper {
+    @Mapping(source = "contacts.phoneNumber", target = "phoneNumber")
+    @Mapping(source = "contacts.email", target = "email")
     @Mapping(qualifiedByName = "toGroupPreview", target = "groups")
     TeacherInfo toTeacherInfo(Teacher teacher);
 

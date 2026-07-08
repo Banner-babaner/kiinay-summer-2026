@@ -4,6 +4,7 @@ import dev.vorstu.dto.input.CreateTeacherRequest;
 import dev.vorstu.dto.input.SignUpRequest;
 import dev.vorstu.dto.output.AuthResponse;
 import dev.vorstu.dto.output.TeacherInfo;
+import dev.vorstu.entity.ContactData;
 import dev.vorstu.entity.Teacher;
 import dev.vorstu.entity.UserAuth;
 import dev.vorstu.entity.UserRole;
@@ -76,7 +77,10 @@ public class TeacherService {
         Teacher teacher = repository.findById(teacherId)
                 .orElseThrow(()->new TeacherNotFoundException("id="+teacherId));
         teacher.setFio(request.getFio());
-        teacher.setPhoneNumber(request.getPhoneNumber());
+        teacher.setContacts(ContactData.builder()
+                .email(request.getEmail())
+                .phoneNumber(request.getPhoneNumber())
+                .build());
         return mapper.toTeacherInfo(repository.save(teacher));
     }
 
@@ -86,7 +90,7 @@ public class TeacherService {
         PhoneValidator.validate(request.getPhoneNumber());
         Teacher teacher = Teacher.builder()
                 .fio(request.getFio())
-                .phoneNumber(request.getPhoneNumber())
+                .contacts(new ContactData(request.getPhoneNumber(), request.getEmail()))
                 .build();
         return mapper.toTeacherInfo(repository.save(teacher));
     }

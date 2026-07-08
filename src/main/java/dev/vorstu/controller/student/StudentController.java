@@ -3,6 +3,7 @@ package dev.vorstu.controller.student;
 import dev.vorstu.controller.annotations.CurrentUser;
 import dev.vorstu.dto.input.CreateStudentRequest;
 import dev.vorstu.dto.output.StudentInfo;
+import dev.vorstu.entity.ContactData;
 import dev.vorstu.service.StudentService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -31,8 +32,7 @@ public class StudentController {
             CreateStudentRequest request){
         return studentService.editStudent(
                 studentId,
-                request.getFio(),
-                request.getPhoneNumber()
+                request
         );
     }
 }

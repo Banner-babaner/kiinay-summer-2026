@@ -17,11 +17,6 @@ import javax.swing.*;
 @AllArgsConstructor
 public class Student implements Authable{
 
-    public Student(String fio, String phoneNumber) {
-        this.fio = fio;
-        this.phoneNumber = phoneNumber;
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,8 +25,8 @@ public class Student implements Authable{
     @Size(max = 64)
     @Column(nullable = false)
     private String fio;
-    @Size(max = 24)
-    private String phoneNumber;
+    @Embedded
+    private ContactData contacts;
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
     private UserAuth userAuth;
     @ManyToOne

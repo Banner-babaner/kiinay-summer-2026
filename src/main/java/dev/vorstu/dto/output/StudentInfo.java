@@ -14,4 +14,5 @@ public class StudentInfo {
     private String fio;
     private GroupPreview group;
     private String phoneNumber;
+    private String email;
 }

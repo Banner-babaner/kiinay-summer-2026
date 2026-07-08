@@ -113,4 +113,9 @@ public class StuddingGroupService {
     public Page<GroupInfo> getAllGroups(Pageable pageable){
         return studdingGroupRepository.findAll(pageable).map(mapper::toGroupInfo);
     }
+
+    public GroupInfo getGroupByName(String groupName){
+        return mapper.toGroupInfo(studdingGroupRepository.findByName(groupName)
+                .orElseThrow(()->new GroupNotFoundException(groupName)));
+    }
 }

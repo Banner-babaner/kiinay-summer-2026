@@ -27,3 +27,9 @@ databaseChangeLog:
       file: db/changelog/migrations/006_phone_num_constraint.sql
   - include:
      file: db/changelog/migrations/007_phone_num_constraint_admins_teachers.sql
+  - include:
+      file: db/changelog/migrations/008_add_email_to_teachers_and_students.sql
+  - include:
+      file: db/changelog/migrations/009_add_invite_applications.sql
+  - include:
+      file: db/changelog/migrations/010_add_password_and_login_to_invite.sql
