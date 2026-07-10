@@ -33,3 +33,5 @@ databaseChangeLog:
       file: db/changelog/migrations/009_add_invite_applications.sql
   - include:
       file: db/changelog/migrations/010_add_password_and_login_to_invite.sql
+  - include:
+      file: db/changelog/migrations/011_generate_uuid_in_invite.sql

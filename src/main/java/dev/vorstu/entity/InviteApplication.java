@@ -6,10 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.Struct;
+import org.hibernate.boot.jaxb.mapping.GenerationTiming;
+import org.hibernate.generator.EventType;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -34,8 +38,10 @@ public class InviteApplication {
 
     @NotBlank
     @Size(max = 36)
-    @Column(nullable = false)
-    private String secretKey;
+    @Generated(event = EventType.INSERT)
+
+    @Column(nullable = false, unique = true)
+    private UUID secretKey;
 
     @NotNull
     @Builder.Default

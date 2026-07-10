@@ -2,8 +2,10 @@ package dev.vorstu.service;
 
 import dev.vorstu.dto.input.CreateUserCsv;
 import dev.vorstu.entity.InviteApplication;
+import dev.vorstu.exception.invite.DuplicateLoginException;
 import dev.vorstu.parser.CsvParser;
 import dev.vorstu.repository.InviteApplicationRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Validator;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ public class InviteApplicationService {
     @Value("${app.invite.live-seconds:3600}")
     private Long liveSeconds;
 
+    @Transactional
     public void inviteFromCsv(@NonNull MultipartFile file){
         List<CreateUserCsv> sources;
         log.info("Start parsing");
@@ -41,6 +44,8 @@ public class InviteApplicationService {
         }
 
         List<String> logins = sources.stream().map(CreateUserCsv::toString).toList();
+        checkBookedLogins(logins);
+
 
     }
 
@@ -58,7 +63,11 @@ public class InviteApplicationService {
                 .build();
     }
 
-    private void checkBookedLogin(CreateUserCsv csv){
+    private void checkBookedLogins(List<String> logins){
+        authService.checkDuplicateLogins(logins);
 
+        List<String> bookedInviteLogins = repository.findLoginByLoginIn(logins);
+        if(!bookedInviteLogins.isEmpty())
+            throw new DuplicateLoginException(logins);
     }
 }
