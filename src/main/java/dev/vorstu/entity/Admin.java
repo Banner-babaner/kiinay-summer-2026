@@ -24,6 +24,6 @@ public class Admin {
     String fio;
     @Size(max = 24)
     String phoneNumber;
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     UserAuth userAuth;
 }

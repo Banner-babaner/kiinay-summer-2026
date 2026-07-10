@@ -26,8 +26,8 @@ public class CreateUserCsv {
     private String groupName;
     @CsvBindByName(column = "PHONE_NUMBER")
     private String phoneNumber;
-    @CsvBindByName(column = "LOGIN")
+    @CsvBindByName(column = "LOGIN", required = true)
     String login;
-    @CsvBindByName(column = "PASSWORD")
+    @CsvBindByName(column = "PASSWORD", required = true)
     String password;
 }

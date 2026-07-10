@@ -18,12 +18,16 @@ import dev.vorstu.repository.UserAuthRepository;
 import dev.vorstu.validator.FioValidator;
 import dev.vorstu.validator.PhoneValidator;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 @Service
+@Validated
 @RequiredArgsConstructor
 public class TeacherService {
     private final AuthService authService;
@@ -32,12 +36,11 @@ public class TeacherService {
     private final UserAuthRepository userAuthRepository;
 
     @Transactional
-    public AuthResponse createTeacherAccount(Long teacherId, String login, String password){
-        if(teacherId==null) throw new NullPointerException("id is null");
+    public AuthResponse createTeacherAccount(@NonNull Long teacherId, @NonNull String login, @NonNull String password){
         Teacher teacher = repository.findById(teacherId)
                 .orElseThrow(()->new StudentNotFoundException(teacherId.toString()));
         if(teacher.getUserAuth()!=null) throw new TeacherAlreadyHasAccountException("id="+teacherId);
-        AuthResponse response = authService.register(
+        return authService.register(
                 SignUpRequest.builder()
                         .login(login)
                         .password(password)
@@ -45,12 +48,9 @@ public class TeacherService {
                         .build(),
                 teacher
         );
-        return response;
     }
 
-    public TeacherInfo getTeacherById(Long teacherId){
-        if(teacherId==null)
-            throw new NullPointerException("teacherId");
+    public TeacherInfo getTeacherById(@NonNull Long teacherId){
         return mapper.toTeacherInfo(repository.findById(teacherId)
                 .orElseThrow(()->new TeacherNotFoundException("id="+teacherId)));
     }
@@ -59,9 +59,7 @@ public class TeacherService {
         return repository.findAll(pageable).map(mapper::toTeacherInfo);
     }
 
-    public long deleteTeacher(Long teacherId){
-        if(teacherId==null)
-            throw new NullPointerException("teacherId");
+    public long deleteTeacher(@NonNull Long teacherId){
         if(!repository.existsById(teacherId))
             throw new NullPointerException("teacherId");
         repository.deleteById(teacherId);
@@ -69,9 +67,7 @@ public class TeacherService {
     }
 
     @Transactional
-    public TeacherInfo editTeacher(Long teacherId, CreateTeacherRequest request){
-        if(teacherId==null)
-            throw new NullPointerException("teacherId");
+    public TeacherInfo editTeacher(@NonNull Long teacherId, CreateTeacherRequest request){
         PhoneValidator.validate(request.getPhoneNumber());
         FioValidator.validate(request.getFio());
         Teacher teacher = repository.findById(teacherId)
@@ -85,7 +81,7 @@ public class TeacherService {
     }
 
     @Transactional
-    public TeacherInfo createTeacher(CreateTeacherRequest request){
+    public TeacherInfo createTeacher(@Valid @NonNull CreateTeacherRequest request){
         FioValidator.validate(request.getFio());
         PhoneValidator.validate(request.getPhoneNumber());
         Teacher teacher = Teacher.builder()
@@ -95,18 +91,27 @@ public class TeacherService {
         return mapper.toTeacherInfo(repository.save(teacher));
     }
 
-    public TeacherInfo getByAuthId(Long authId){
-        if(authId==null)
-            throw new NullPointerException("authId");
+    @Transactional
+    public TeacherInfo createTeacher(@Valid @NonNull CreateTeacherRequest request,
+                                     @NonNull String login, @NonNull String password){
+        FioValidator.validate(request.getFio());
+        PhoneValidator.validate(request.getPhoneNumber());
+        Teacher teacher = Teacher.builder()
+                .fio(request.getFio())
+                .contacts(new ContactData(request.getPhoneNumber(), request.getEmail()))
+                .userAuth(userAuthRepository.save(UserAuth.builder().login(login).password(password).role(UserRole.TEACHER).build()))
+                .build();
+        return mapper.toTeacherInfo(repository.save(teacher));
+    }
+
+    public TeacherInfo getByAuthId(@NonNull Long authId){
         return mapper.toTeacherInfo(repository.findByUserAuthId(authId)
                 .orElseThrow(()->new UnknownStudentException("userAuthId="+authId)));
     }
 
 
     @Transactional
-    public void deleteTeacherAccount(Long teacherId){
-        if(teacherId==null)
-            throw new NullPointerException("teacherId");
+    public void deleteTeacherAccount(@NonNull Long teacherId){
         Teacher teacher = repository.findById(teacherId)
                 .orElseThrow(()->new TeacherNotFoundException("id="+teacherId));
         UserAuth auth = teacher.getUserAuth();

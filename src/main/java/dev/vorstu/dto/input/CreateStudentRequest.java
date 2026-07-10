@@ -1,9 +1,12 @@
 package dev.vorstu.dto.input;
 
 import jakarta.validation.constraints.*;
-import lombok.Data;
+import lombok.*;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateStudentRequest {
     @NotNull
     @Size(max = 64)

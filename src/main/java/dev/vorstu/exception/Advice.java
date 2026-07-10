@@ -3,10 +3,8 @@ package dev.vorstu.exception;
 import dev.vorstu.exception.auth.*;
 import dev.vorstu.exception.common.InvalidFioFormatException;
 import dev.vorstu.exception.common.InvalidPhoneNumberException;
-import dev.vorstu.exception.group.DuplicateGroupNameException;
-import dev.vorstu.exception.group.GroupNotFoundException;
-import dev.vorstu.exception.group.NotEmptyGroupException;
-import dev.vorstu.exception.group.StudentAlreadyPresentsException;
+import dev.vorstu.exception.group.*;
+import dev.vorstu.exception.invite.IllegalInviteRoleException;
 import dev.vorstu.exception.student.StudentAlreadyHasAccountException;
 import dev.vorstu.exception.student.StudentNotFoundException;
 import dev.vorstu.exception.teacher.TeacherAlreadyHasAccountException;
@@ -100,6 +98,17 @@ public class Advice {
     @ExceptionHandler(InvalidLoginFormatException.class)
     public ResponseEntity<ErrorResponse> handleInvalidLoginFormat(InvalidLoginFormatException e) {
         return buildErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(dev.vorstu.exception.invite.DuplicateLoginException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateLogin(dev.vorstu.exception.invite.DuplicateLoginException e){
+        return buildErrorResponse(e.getMessage(), HttpStatus.CONFLICT);
+    }
+
+
+    @ExceptionHandler(TeacherAlreadyTeachesHereException.class)
+    public ResponseEntity<ErrorResponse> handleTeacherAlreadyTeachesHere(TeacherAlreadyTeachesHereException e){
+        return buildErrorResponse(e.getMessage(), HttpStatus.CONFLICT);
     }
 
     // DEFAULT

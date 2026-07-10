@@ -2,9 +2,7 @@ package dev.vorstu.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.Struct;
@@ -18,6 +16,7 @@ import java.util.UUID;
 @Entity
 @Builder
 @Table(name = "invite_applications")
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class InviteApplication {
@@ -36,13 +35,12 @@ public class InviteApplication {
     @Column(nullable = false)
     private LocalDateTime expiresAt;
 
-    @NotBlank
-    @Size(max = 36)
-    @Generated(event = EventType.INSERT)
 
-    @Column(nullable = false, unique = true)
+    @Generated(event = EventType.INSERT)
+    @Column(nullable = false, unique = true, updatable = false)
     private UUID secretKey;
 
+    @Setter
     @NotNull
     @Builder.Default
     @ColumnDefault("false")

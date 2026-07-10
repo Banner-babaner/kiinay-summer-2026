@@ -20,6 +20,7 @@ import dev.vorstu.validator.FioValidator;
 import dev.vorstu.validator.PhoneValidator;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,8 +41,7 @@ public class StudentService {
 
 
     @Transactional
-    public AuthResponse createStudentAccount(Long studentId, String login, String password){
-        if(studentId==null) throw new NullPointerException("id is null");
+    public AuthResponse createStudentAccount(@NonNull Long studentId, @NonNull String login, @NonNull String password){
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(()->new StudentNotFoundException(studentId.toString()));
         if(student.getUserAuth()!=null) throw new StudentAlreadyHasAccountException("id="+studentId);
@@ -64,8 +64,7 @@ public class StudentService {
         return studentRepository.findByGroup(groupName, pageable).map(mapper::toStudentInfo);
     }
 
-    public StudentInfo getStudent(Long id) {
-        if(id==null) throw new NullPointerException("id is null");
+    public StudentInfo getStudent(@NonNull Long id) {
         return mapper.toStudentInfo(studentRepository.findById(id)
                 .orElseThrow(()->new StudentNotFoundException(id.toString())));
     }
@@ -79,11 +78,9 @@ public class StudentService {
 
     @Transactional
     public StudentInfo editStudent(
-            Long id,
+            @NonNull Long id,
             @Valid CreateStudentRequest request
     ) {
-        if(id==null)
-            throw new NullPointerException("id is null");
         if(!studentRepository.existsById(id))
             throw new StudentNotFoundException(id.toString());
         Student student = studentRepository.getReferenceById(id);
@@ -105,12 +102,24 @@ public class StudentService {
         return mapper.toStudentInfo(saved);
     }
 
+    public StudentInfo createStudent(@Valid CreateStudentRequest request, @NonNull String login, @NonNull String password) {
+        Student saved = studentRepository.save(Student.builder()
+                .fio(request.getFio())
+                .contacts(new ContactData(request.getPhoneNumber(), request.getEmail()))
+                        .userAuth(userAuthRepository.save(UserAuth.builder()
+                                .login(login)
+                                .password(password)
+                                .role(UserRole.STUDENT)
+                                .build()))
+                .build());
+
+        return mapper.toStudentInfo(saved);
+    }
 
 
 
-    public StudentInfo getByAuthId(Long authId){
-        if(authId==null)
-            throw new NullPointerException("authId");
+
+    public StudentInfo getByAuthId(@NonNull Long authId){
         return mapper.toStudentInfo(studentRepository.findByUserAuthId(authId)
                 .orElseThrow(()->new UnknownStudentException("userAuthId="+authId)));
     }
@@ -126,9 +135,7 @@ public class StudentService {
     }
 
     @Transactional
-    public void deleteStudentAccount(Long studentId){
-        if(studentId==null)
-            throw new NullPointerException("studentId");
+    public void deleteStudentAccount(@NonNull Long studentId){
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(()->new StudentNotFoundException("id="+studentId));
         UserAuth auth = student.getUserAuth();

@@ -29,10 +29,11 @@ public class Student implements Authable{
     private ContactData contacts;
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.REMOVE})
     private UserAuth userAuth;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     private StuddingGroup group;
 
     @Override
+    @OneToOne(cascade = CascadeType.PERSIST)
     public void setAuth(UserAuth auth) {
         userAuth=auth;
     }

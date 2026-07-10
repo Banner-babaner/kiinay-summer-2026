@@ -4,15 +4,16 @@ import dev.vorstu.dto.input.CreateGroupRequest;
 import dev.vorstu.dto.output.GroupInfo;
 import dev.vorstu.entity.StuddingGroup;
 import dev.vorstu.entity.Student;
-import dev.vorstu.exception.group.DuplicateGroupNameException;
-import dev.vorstu.exception.group.GroupNotFoundException;
-import dev.vorstu.exception.group.NotEmptyGroupException;
-import dev.vorstu.exception.group.StudentAlreadyPresentsException;
+import dev.vorstu.entity.Teacher;
+import dev.vorstu.exception.group.*;
 import dev.vorstu.exception.student.StudentNotFoundException;
+import dev.vorstu.exception.teacher.TeacherNotFoundException;
 import dev.vorstu.mapper.GroupMapper;
 import dev.vorstu.repository.StuddingGroupRepository;
 import dev.vorstu.repository.StudentRepository;
+import dev.vorstu.repository.TeacherRepository;
 import jakarta.transaction.Transactional;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,17 +26,13 @@ import java.util.Set;
 public class StuddingGroupService {
     private final StuddingGroupRepository studdingGroupRepository;
     private final StudentRepository studentRepository;
+    private final TeacherRepository teacherRepository;
     private final GroupMapper mapper;
 
     @Transactional
-    public void addStudent(Long studentId, Long groupId){
-
+    public void addStudent(@NonNull Long studentId, @NonNull Long groupId){
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(()->new StudentNotFoundException("id="+studentId));
-        if(groupId==null){
-            student.setGroup(null);
-            return;
-        }
         StuddingGroup group = studdingGroupRepository.findById(groupId)
                 .orElseThrow(()->new GroupNotFoundException("id="+groupId));
         Set<Student> presented = group.getStudents();
@@ -43,6 +40,22 @@ public class StuddingGroupService {
             throw new StudentAlreadyPresentsException("student "+student.getFio()+
                     "group "+group.getName());
         student.setGroup(group);
+    }
+
+    @Transactional
+    public void addTeacher(@NonNull Long teacherId, @NonNull Long groupId){
+        Teacher teacher = teacherRepository.findById(teacherId)
+                .orElseThrow(()->new TeacherNotFoundException("id="+teacherId));
+        StuddingGroup group = studdingGroupRepository.findById(groupId)
+                .orElseThrow(()->new GroupNotFoundException("id="+groupId));
+        Set<Teacher> presented = group.getTeachers();
+        if(presented.contains(teacher))
+            throw new TeacherAlreadyTeachesHereException("teacher "+teacher.getFio()+
+                    "group "+group.getName());
+        if(teacher.getGroups()==null)
+            teacher.setGroups(Set.of(group));
+        else
+            teacher.getGroups().add(group);
     }
 
     public GroupInfo getGroup(Long id){
@@ -117,5 +130,12 @@ public class StuddingGroupService {
     public GroupInfo getGroupByName(String groupName){
         return mapper.toGroupInfo(studdingGroupRepository.findByName(groupName)
                 .orElseThrow(()->new GroupNotFoundException(groupName)));
+    }
+
+    @Transactional
+    public GroupInfo findOrCreateByName(String groupName) {
+        return mapper.toGroupInfo(studdingGroupRepository.findByName(groupName)
+                .orElseGet(()->studdingGroupRepository.save(
+                        StuddingGroup.builder().name(groupName).build())));
     }
 }

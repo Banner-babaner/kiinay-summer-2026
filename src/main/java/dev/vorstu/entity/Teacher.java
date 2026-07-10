@@ -38,6 +38,7 @@ public class Teacher implements Authable {
     private Set<StuddingGroup> groups;
 
     @Override
+    @OneToOne(cascade = CascadeType.PERSIST)
     public void setAuth(UserAuth auth) {
         userAuth=auth;
     }
