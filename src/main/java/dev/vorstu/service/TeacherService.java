@@ -38,7 +38,7 @@ public class TeacherService {
     @Transactional
     public AuthResponse createTeacherAccount(@NonNull Long teacherId, @NonNull String login, @NonNull String password){
         Teacher teacher = repository.findById(teacherId)
-                .orElseThrow(()->new StudentNotFoundException(teacherId.toString()));
+                .orElseThrow(()->new TeacherNotFoundException(teacherId.toString()));
         if(teacher.getUserAuth()!=null) throw new TeacherAlreadyHasAccountException("id="+teacherId);
         return authService.register(
                 SignUpRequest.builder()
