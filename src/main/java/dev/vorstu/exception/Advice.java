@@ -5,6 +5,8 @@ import dev.vorstu.exception.common.InvalidFioFormatException;
 import dev.vorstu.exception.common.InvalidPhoneNumberException;
 import dev.vorstu.exception.group.*;
 import dev.vorstu.exception.invite.IllegalInviteRoleException;
+import dev.vorstu.exception.parser.EmptyFileException;
+import dev.vorstu.exception.parser.IllegalFileExtensionException;
 import dev.vorstu.exception.student.StudentAlreadyHasAccountException;
 import dev.vorstu.exception.student.StudentNotFoundException;
 import dev.vorstu.exception.teacher.TeacherAlreadyHasAccountException;
@@ -111,6 +113,22 @@ public class Advice {
         return buildErrorResponse(e.getMessage(), HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(IllegalInviteRoleException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalInviteRole(IllegalInviteRoleException e){
+        return buildErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(EmptyFileException.class)
+    public ResponseEntity<ErrorResponse> handleEmptyFile(EmptyFileException e){
+        return buildErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalFileExtensionException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalFileExtension(IllegalFileExtensionException e){
+        return buildErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+
     // DEFAULT
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleDefault(RuntimeException e) {
@@ -121,6 +139,8 @@ public class Advice {
         return ResponseEntity.status(status)
                 .body(new ErrorResponse(message, status.value(), LocalDateTime.now()));
     }
+
+
 
     public record ErrorResponse(String message, int status, LocalDateTime timestamp) {}
 }
