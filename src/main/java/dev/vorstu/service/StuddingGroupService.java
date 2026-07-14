@@ -58,17 +58,17 @@ public class StuddingGroupService {
             teacher.getGroups().add(group);
     }
 
-    public GroupInfo getGroup(Long id){
+    public GroupInfo getGroup(@NonNull Long id){
         return mapper.toGroupInfo(studdingGroupRepository.findById(id)
                 .orElseThrow(()->new GroupNotFoundException("id="+id)));
     }
 
-    public Page<GroupInfo> getTeacherGroups(Long teacherId, Pageable pageable){
+    public Page<GroupInfo> getTeacherGroups(@NonNull Long teacherId, @NonNull Pageable pageable){
         return studdingGroupRepository.
                 findByTeachersId(teacherId, pageable).map(mapper::toGroupInfo);
     }
 
-    public GroupInfo getTeachersGroup(Long teacherId, Long groupId){
+    public GroupInfo getTeachersGroup(@NonNull Long teacherId, @NonNull Long groupId){
         return mapper.toGroupInfo(studdingGroupRepository.findByIdAndTeachersId(groupId, teacherId)
                 .orElseThrow(()->new GroupNotFoundException("id="+groupId)));
     }

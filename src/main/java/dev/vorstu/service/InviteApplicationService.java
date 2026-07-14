@@ -1,15 +1,13 @@
 package dev.vorstu.service;
 
+import dev.vorstu.dto.common.VeryPrimitiveMessage;
 import dev.vorstu.dto.input.CreateStudentRequest;
 import dev.vorstu.dto.input.CreateTeacherRequest;
 import dev.vorstu.dto.input.CreateUserCsv;
-import dev.vorstu.dto.input.SignUpRequest;
-import dev.vorstu.dto.output.AuthResponse;
 import dev.vorstu.dto.output.StudentInfo;
 import dev.vorstu.dto.output.TeacherInfo;
 import dev.vorstu.entity.InviteApplication;
 import dev.vorstu.entity.StuddingGroup;
-import dev.vorstu.entity.Teacher;
 import dev.vorstu.exception.invite.DuplicateLoginException;
 import dev.vorstu.exception.invite.IllegalInviteRoleException;
 import dev.vorstu.parser.CsvParser;
@@ -22,10 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -39,7 +35,7 @@ public class InviteApplicationService {
     private final CsvParser parser;
     private final StuddingGroupService groupService;
     private final AuthService authService;
-    private final MailService mailService;
+    private final EmailService emailService;
     private final StudentService studentService;
     private final TeacherService teacherService;
 
@@ -82,7 +78,7 @@ public class InviteApplicationService {
     }
 
     @Transactional
-    public void useSecretKey(String secretKey){
+    public void useSecretKey(@NonNull String secretKey){
         log.info("Trying use secret key {}", secretKey);
         UUID uuid = UUID.fromString(secretKey);
         InviteApplication application = repository.findActiveBySecretKey(uuid, LocalDateTime.now())
@@ -148,18 +144,10 @@ public class InviteApplicationService {
     }
 
     private void sendInvites(List<InviteApplication> invites){
-        invites.forEach(invite->
-                {
-                    try {
-                        mailService.sendSimpleMessage(
-                                invite.getEmail(),
-                                "INVITE",
-                                inviteMessage + "\n" + endpoint + invite.getSecretKey());
-                    } catch (Exception e) {
-                        log.warn("Can not send email for {}", invite, e);
-                    }
-                }
-        );
+        emailService.sendSimpleMessages(invites.stream().map(invite->new VeryPrimitiveMessage(invite.getEmail(),
+                "INVITE",
+                "You was invited to our app, your link: "+endpoint+invite.getSecretKey()))
+                .toList());
     }
 
 

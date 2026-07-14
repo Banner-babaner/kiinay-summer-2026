@@ -12,6 +12,7 @@ import dev.vorstu.exception.auth.InvalidTokenException;
 import dev.vorstu.parser.CsvParser;
 import dev.vorstu.repository.InviteApplicationRepository;
 import dev.vorstu.repository.UserAuthRepository;
+import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,10 +21,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
 @Service
+@Validated
 @RequiredArgsConstructor
 public class AuthService {
     private final AuthenticationManager authenticationManager;
@@ -31,7 +34,7 @@ public class AuthService {
     private final UserAuthRepository repository;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthResponse login(@NonNull SignInRequest request) {
+    public AuthResponse login(@NonNull @Valid SignInRequest request) {
 
         if(request.getLogin()==null || request.getLogin().length()>70){
             throw new InvalidLoginFormatException("Login must be a string containing 0-70 chars");
@@ -74,7 +77,7 @@ public class AuthService {
     }
 
 
-    public AuthResponse register(@NonNull SignUpRequest request, @NonNull Authable person){
+    public AuthResponse register(@NonNull @Valid SignUpRequest request, @NonNull Authable person){
         UserAuth saved = registerAccount(request);
         person.setAuth(saved);
         return AuthResponse.builder()
@@ -86,7 +89,7 @@ public class AuthService {
     }
 
 
-    public AuthResponse register(SignUpRequest request) {
+    public AuthResponse register(@NonNull @Valid SignUpRequest request) {
         UserAuth saved = registerAccount(request);
         return AuthResponse.builder()
                 .accountId(saved.getId())

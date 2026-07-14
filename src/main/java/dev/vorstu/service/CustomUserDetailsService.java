@@ -1,6 +1,7 @@
 package dev.vorstu.service;
 
 import dev.vorstu.repository.UserAuthRepository;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,7 +14,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserAuthRepository repository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
         return repository.findByLogin(username)
                 .orElseThrow(()->new UsernameNotFoundException(username));
     }
