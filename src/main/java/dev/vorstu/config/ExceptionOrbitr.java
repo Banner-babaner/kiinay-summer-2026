@@ -1,8 +1,7 @@
 package dev.vorstu.config;
 
-import dev.vorstu.exception.mail.OrbitrWantsAnException;
+import dev.vorstu.exception.orbitr.OrbitrWantsAnException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.util.Random;
 

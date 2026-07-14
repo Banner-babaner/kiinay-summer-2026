@@ -4,7 +4,6 @@ import dev.vorstu.config.ExceptionOrbitr;
 import dev.vorstu.dto.common.VeryPrimitiveMessage;
 import dev.vorstu.dto.event.EmailErrorEvent;
 import dev.vorstu.exception.mail.InvalidErrorHandlerMode;
-import dev.vorstu.exception.mail.OrbitrWantsAnException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 @Slf4j
